@@ -1,0 +1,5 @@
+Ever wonder how much memory your process is using?  Have you ever wanted to know at specific points of execution what the memory usage looks like? 
+This should give you a similar sense of the process memory usage as looking at top, task manager or activity monitor.  The advantage is you don't have
+to run an external tool to capture what's going on inside your process.
+
+For ruby see ext/test.rb
