@@ -1,13 +1,16 @@
 Gem::Specification.new do |s|
   s.name    = "rmem"
   s.authors = ["Todd A. Fisher"]
-  s.version = '1.0.0'
-  s.date    = '2009-04-30'
+  s.version = '<%= CURRENT_VERSION %>'
+  s.date    = '<%= Time.now.strftime("%Y-%m-%d") %>'
   s.description = %q{Measure approximate process memory}
   s.email   = 'todd.fisher@gmail.com'
   s.extra_rdoc_files = ['LICENSE', 'README']
-  
-  s.files = ["LICENSE", "README", "Rakefile", "ext/extconf.rb", "ext/rmem.c"]
+  <%
+    files = ['LICENSE', 'README', 'Rakefile',
+             'ext/extconf.rb'] + Dir["ext/**/**.c"] + Dir["ext/**/**.h"]
+  %>
+  s.files = <%= files.inspect %>
   #### Load-time details
   s.require_paths = ['ext']
   s.rubyforge_project = 'rmem'
