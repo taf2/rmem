@@ -47,9 +47,7 @@ static int report_memory_usage(unsigned long *size)
    HANDLE hProcess;
    PROCESS_MEMORY_COUNTERS pmc;
 
-   hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
-                                       PROCESS_VM_READ,
-                                       FALSE, GetCurrentProcessId() );
+   hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId() );
    if (NULL == hProcess)
      return 1;
    if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) ) {
