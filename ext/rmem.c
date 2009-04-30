@@ -27,9 +27,9 @@ static int report_memory_usage(unsigned long *size)
   FILE* pf = fopen(buf, "r");
   if (pf) {
     int r = fscanf(pf, "%lu", size);
+    fclose(pf);
     return (r == 1) ? 0 : 1;
   }
-  fclose(pf);
   return 1;
 #endif
 
