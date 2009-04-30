@@ -9,6 +9,9 @@
 #elif HAVE_PROC
 // see: http://www.linuxforums.org/forum/linux-programming-scripting/11703-c-function-returns-cpu-memory-usage.html
 #  include <unistd.h>
+#elif HAVE_WINDOWS_H
+#  include <windows.h>
+#  include <psapi.h>
 #else
   #error "No /proc or libproc.h"
 #endif
@@ -39,6 +42,22 @@ static int report_memory_usage(unsigned long *size)
   *size = pt.pti_resident_size;
   return 0;
 
+#endif
+#ifdef HAVE_WINDOWS_H
+   HANDLE hProcess;
+   PROCESS_MEMORY_COUNTERS pmc;
+
+   hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION |
+                                       PROCESS_VM_READ,
+                                       FALSE, GetCurrentProcessId() );
+   if (NULL == hProcess)
+     return 1;
+   if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) ) {
+     *size = pmc.PagefileUsage;
+   }
+
+   CloseHandle( hProcess );
+   return 0;
 #endif
 }
 
