@@ -1,5 +1,11 @@
+Ruby Memory Measure
+-------------------
+
 Ever wonder how much memory your process is using?  Have you ever wanted to know at specific points of execution what the memory usage looks like? 
 This should give you a similar sense of the process memory usage as looking at top, task manager or activity monitor.  The advantage is you don't have
 to run an external tool to capture what's going on inside your process.
+
+ bytes = RMem::Report.memory
+ puts format("footprint: %d bytes, %.2f kbytes, and %.4f MB", bytes, bytes/1024.0, bytes/1024.0/1024.0)
 
 For ruby see test.rb
