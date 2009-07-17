@@ -18,9 +18,8 @@
 
 #include <ruby.h>
 
-static int report_memory_usage(unsigned long *size)
+static int report_memory_usage_by_pid(unsigned long pid, unsigned long *size)
 {
-  unsigned long pid = getpid();
 #ifdef HAVE_PROC
   char buf[30];
   snprintf(buf, 30, "/proc/%lu/statm", pid);
@@ -47,7 +46,7 @@ static int report_memory_usage(unsigned long *size)
    HANDLE hProcess;
    PROCESS_MEMORY_COUNTERS pmc;
 
-   hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId() );
+   hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
    if (NULL == hProcess)
      return 1;
    if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) ) {
@@ -57,6 +56,17 @@ static int report_memory_usage(unsigned long *size)
    CloseHandle( hProcess );
    return 0;
 #endif
+}
+
+static int report_memory_usage(unsigned long *size)
+{
+  unsigned long pid;
+#ifdef HAVE_WINDOWS_H
+  pid = GetCurrentProcessId();
+#else
+  pid = getpid();
+#endif
+  return report_memory_usage_by_pid(pid, size);
 }
 
 static VALUE rb_rmem;
@@ -71,11 +81,22 @@ static VALUE ruby_memory_report(VALUE self)
   return rb_int_new(bytes);
 }
 
+static VALUE ruby_memory_report_for(VALUE self, VALUE pid)
+{
+  unsigned long bytes;
+  if( report_memory_usage_by_pid(FIX2LONG(pid), &bytes) ) {
+    rb_raise(rb_eRuntimeError, "Error detecting runtime memory usage");
+  }
+  return rb_int_new(bytes);
+}
+
+
 void Init_rmem()
 {
   rb_rmem = rb_define_module("RMem");
   rb_rmem_report = rb_define_class_under( rb_rmem, "Report", rb_cObject );
   rb_define_singleton_method(rb_rmem_report, "memory", ruby_memory_report, 0);
+  rb_define_singleton_method(rb_rmem_report, "memory_for", ruby_memory_report_for, 1);
 }
 
 
